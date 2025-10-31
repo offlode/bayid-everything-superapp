@@ -1,48 +1,296 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "postgresql"; url = env("DATABASE_URL"); directUrl = env("DIRECT_URL") }
+generator client {
+  provider = "prisma-client-js"
+}
 
-model User { id String @id @default(cuid()) email String @unique name String? role Role @default(CUSTOMER) gender String? kycStatus String? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }
-enum Role { CUSTOMER SELLER PROVIDER DRIVER ADMIN SUPERADMIN }
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
 
-model Seller { id String @id @default(cuid()) userId String @unique rating Float @default(0) onTimePct Float @default(1) createdAt DateTime @default(now()) }
-model Provider { id String @id @default(cuid()) userId String @unique serviceAreas String rating Float @default(0) createdAt DateTime @default(now()) }
-model Driver { id String @id @default(cuid()) userId String @unique vehicle String? zone String? rating Float @default(0) createdAt DateTime @default(now()) }
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  name       String?
+  role       Role     @default(CUSTOMER)
+  gender     String?
+  kycStatus  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
 
-model Category { id String @id @default(cuid()) name String genderVisibility String? createdAt DateTime @default(now()) }
-model Product { id String @id @default(cuid()) sellerId String categoryId String title String description String? images Json? priceCents Int flags Json? ratingAvg Float @default(0) ratingCount Int @default(0) createdAt DateTime @default(now()) }
-model Inventory { id String @id @default(cuid()) sellerId String productId String qtyOnHand Int @default(0) qtyReserved Int @default(0) updatedAt DateTime @updatedAt }
+enum Role {
+  CUSTOMER
+  SELLER
+  PROVIDER
+  DRIVER
+  ADMIN
+  SUPERADMIN
+}
 
-model Order { id String @id @default(cuid()) userId String vertical String totalCents Int status String @default("pending") city String? createdAt DateTime @default(now()) }
-model OrderItem { id String @id @default(cuid()) orderId String productId String? serviceId String? sellerId String? providerId String? qty Int @default(1) priceCents Int }
-model Shipment { id String @id @default(cuid()) orderId String carrier String? tracking String? status String @default("pending") events Json? }
-model DeliveryTask { id String @id @default(cuid()) orderId String driverId String? status String @default("assigned") proofPhotos Json? routeSeq Int? }
+model Seller {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  rating    Float    @default(0)
+  onTimePct Float    @default(1)
+  createdAt DateTime @default(now())
+}
 
-model MessageThread { id String @id @default(cuid()) orderId String buyerId String sellerId String? providerId String? createdAt DateTime @default(now()) }
-model Message { id String @id @default(cuid()) threadId String senderId String body String createdAt DateTime @default(now()) }
+model Provider {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  serviceAreas String
+  rating       Float    @default(0)
+  createdAt    DateTime @default(now())
+}
 
-model Review { id String @id @default(cuid()) orderId String targetType String targetId String rating Int comment String? createdAt DateTime @default(now()) }
+model Driver {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  vehicle   String?
+  zone      String?
+  rating    Float    @default(0)
+  createdAt DateTime @default(now())
+}
 
-model PriceRule { id String @id @default(cuid()) scope String city String? refId String? min Int? max Int? formula String? activeAt DateTime @default(now()) }
+model Category {
+  id               String   @id @default(cuid())
+  name             String
+  genderVisibility String?
+  createdAt        DateTime @default(now())
+}
 
-model Notification { id String @id @default(cuid()) userId String type String payload Json sentAt DateTime? channel String }
-model AuditLog { id String @id @default(cuid()) actorId String? action String object String objectId String? diff Json? ts DateTime @default(now()) }
+model Product {
+  id           String   @id @default(cuid())
+  sellerId     String
+  categoryId   String
+  title        String
+  description  String?
+  images       Json?
+  priceCents   Int
+  flags        Json?
+  ratingAvg    Float    @default(0)
+  ratingCount  Int      @default(0)
+  createdAt    DateTime @default(now())
+}
 
-model GLAccount { id String @id @default(cuid()) code String name String type String }
-model JournalEntry { id String @id @default(cuid()) date DateTime @default(now()) memo String? }
-model JournalLine { id String @id @default(cuid()) entryId String accountId String debit Int @default(0) credit Int @default(0) }
+model Inventory {
+  id          String   @id @default(cuid())
+  sellerId    String
+  productId   String
+  qtyOnHand   Int      @default(0)
+  qtyReserved Int      @default(0)
+  updatedAt   DateTime @updatedAt
+}
 
-model AccountCRM { id String @id @default(cuid()) type String name String status String @default("active") }
-model Contact { id String @id @default(cuid()) accountId String name String email String? phone String? role String? }
-model Opportunity { id String @id @default(cuid()) accountId String pipeline String stage String value Int @default(0) ownerId String? closeDate DateTime? }
-model Activity { id String @id @default(cuid()) accountId String? opportunityId String? type String notes String? when DateTime @default(now()) ownerId String? }
+model Order {
+  id         String   @id @default(cuid())
+  userId     String
+  vertical   String
+  totalCents Int
+  status     String   @default("pending")
+  city       String?
+  createdAt  DateTime @default(now())
+}
 
-model Ticket { id String @id @default(cuid()) userId String orderId String? type String priority String @default("normal") status String @default("open") assigneeId String? slaDue DateTime? }
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  productId   String?
+  serviceId   String?
+  sellerId    String?
+  providerId  String?
+  qty         Int      @default(1)
+  priceCents  Int
+}
 
-model Service { id String @id @default(cuid()) providerId String type String basePrice Int addOns Json? leadTime Int? }
+model Shipment {
+  id        String   @id @default(cuid())
+  orderId   String
+  carrier   String?
+  tracking  String?
+  status    String   @default("pending")
+  events    Json?
+}
 
-model Cart { id String @id @default(cuid()) userId String? guestId String? updatedAt DateTime @updatedAt }
-model CartItem { id String @id @default(cuid()) cartId String productId String qty Int @default(1) }
+model DeliveryTask {
+  id          String   @id @default(cuid())
+  orderId     String
+  driverId    String?
+  status      String   @default("assigned")
+  proofPhotos Json?
+  routeSeq    Int?
+}
 
-model RecoEvent { id String @id @default(cuid()) userId String? productId String event String ts DateTime @default(now()) }
-model ProductAffinity { id String @id @default(cuid()) productA String productB String score Float @default(0) source String window String? }
-model SearchQueryLog { id String @id @default(cuid()) userId String? query String results Json? ts DateTime @default(now()) }
+model MessageThread {
+  id         String   @id @default(cuid())
+  orderId    String
+  buyerId    String
+  sellerId   String?
+  providerId String?
+  createdAt  DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  threadId  String
+  senderId  String
+  body      String
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  orderId    String
+  targetType String
+  targetId   String
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+}
+
+model PriceRule {
+  id        String   @id @default(cuid())
+  scope     String
+  city      String?
+  refId     String?
+  min       Int?
+  max       Int?
+  formula   String?
+  activeAt  DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  payload   Json
+  sentAt    DateTime?
+  channel   String
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  action    String
+  object    String
+  objectId  String?
+  diff      Json?
+  ts        DateTime @default(now())
+}
+
+model GLAccount {
+  id    String @id @default(cuid())
+  code  String
+  name  String
+  type  String
+}
+
+model JournalEntry {
+  id    String   @id @default(cuid())
+  date  DateTime @default(now())
+  memo  String?
+}
+
+model JournalLine {
+  id        String @id @default(cuid())
+  entryId   String
+  accountId String
+  debit     Int    @default(0)
+  credit    Int    @default(0)
+}
+
+model AccountCRM {
+  id     String @id @default(cuid())
+  type   String
+  name   String
+  status String @default("active")
+}
+
+model Contact {
+  id        String @id @default(cuid())
+  accountId String
+  name      String
+  email     String?
+  phone     String?
+  role      String?
+}
+
+model Opportunity {
+  id         String   @id @default(cuid())
+  accountId  String
+  pipeline   String
+  stage      String
+  value      Int      @default(0)
+  ownerId    String?
+  closeDate  DateTime?
+}
+
+model Activity {
+  id             String   @id @default(cuid())
+  accountId      String?
+  opportunityId  String?
+  type           String
+  notes          String?
+  when           DateTime @default(now())
+  ownerId        String?
+}
+
+model Ticket {
+  id         String   @id @default(cuid())
+  userId     String
+  orderId    String?
+  type       String
+  priority   String   @default("normal")
+  status     String   @default("open")
+  assigneeId String?
+  slaDue     DateTime?
+}
+
+model Service {
+  id         String   @id @default(cuid())
+  providerId String
+  type       String
+  basePrice  Int
+  addOns     Json?
+  leadTime   Int?
+}
+
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String?
+  guestId   String?
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  productId String
+  qty       Int      @default(1)
+}
+
+model RecoEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  productId String
+  event     String
+  ts        DateTime @default(now())
+}
+
+model ProductAffinity {
+  id        String   @id @default(cuid())
+  productA  String
+  productB  String
+  score     Float    @default(0)
+  source    String
+  window    String?
+}
+
+model SearchQueryLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  query     String
+  results   Json?
+  ts        DateTime @default(now())
+}
