@@ -2,6 +2,8 @@
   "name": "bayid-everything-superapp",
   "private": true,
   "version": "1.0.0",
+  "engines": { "node": "20.x" },
+  "packageManager": "pnpm@8.15.4",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,7 +11,8 @@
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:deploy": "prisma migrate deploy"
+    "prisma:deploy": "prisma migrate deploy",
+    "lint": "next lint"
   },
   "dependencies": {
     "@prisma/client": "5.19.1",
