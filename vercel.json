@@ -1,7 +1,6 @@
 {
-  "buildCommand": "pnpm build",
-  "outputDirectory": ".next",
+  "buildCommand": "npm install --no-audit --no-fund && npm run build",
+  "installCommand": "npm install --no-audit --no-fund",
   "framework": "nextjs",
-  "installCommand": "pnpm install",
-  "devCommand": "pnpm dev"
+  "outputDirectory": ".next"
 }
