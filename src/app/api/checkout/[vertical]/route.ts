@@ -1,1 +1,34 @@
-import {NextRequest,NextResponse} from 'next/server'; import {stripe} from '@/lib/stripe'; export async function POST(req:NextRequest,{params}:{params:{vertical:string}}){const f=await req.formData(); const amount=Number(f.get('amount')||0); if(!amount||amount<50) return NextResponse.json({error:'Invalid amount'},{status:400}); const s=await stripe.checkout.sessions.create({mode:'payment',line_items:[{price_data:{currency:'usd',unit_amount:amount,product_data:{name:`${params.vertical} order`}},quantity:1}],success_url:process.env.STRIPE_SUCCESS_URL!,cancel_url:process.env.STRIPE_CANCEL_URL!}); return NextResponse.redirect(s.url!,{status:303}); }
+import { NextRequest, NextResponse } from "next/server";
+import { stripe } from "../../../../lib/stripe";
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { vertical: string } }
+) {
+  const form = await req.formData();
+  const amount = Number(form.get("amount") || 0);
+
+  if (!amount || amount < 50) {
+    return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
+  }
+
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    line_items: [
+      {
+        price_data: {
+          currency: "usd",
+          unit_amount: amount,
+          product_data: {
+            name: `${params.vertical} order`,
+          },
+        },
+        quantity: 1,
+      },
+    ],
+    success_url: process.env.STRIPE_SUCCESS_URL!,
+    cancel_url: process.env.STRIPE_CANCEL_URL!,
+  });
+
+  return NextResponse.redirect(session.url!, { status: 303 });
+}
