@@ -1,0 +1,1 @@
+<div className='grid' style={{gap:16}}><a className='card' href='/store'>Store</a><a className='card' href='/ride'>BuyItRide</a><a className='card' href='/cleaning'>BuyItClean</a><a className='card' href='/wash'>BuyItWash</a><a className='card' href='/cart'>Cart</a></div>

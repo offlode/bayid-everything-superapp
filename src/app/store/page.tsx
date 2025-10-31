@@ -1,0 +1,1 @@
+import {db} from '@/lib/db'; export default async function S(){const ps=await db.product.findMany({take:12}); return <div className='grid' style={{gap:12}}>{ps.map(p=><div key={p.id} className='card'><a href={'/store/'+p.id}><div style={{fontWeight:600}}>{p.title}</div></a></div>)}</div>}
